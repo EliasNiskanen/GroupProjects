@@ -8,59 +8,8 @@ Made by: Group-5
 
 ***
 
-## Purpose of this project
+The primary aim of  this project was to establish a web-based platform, called Soitinlainaus, to function as a rental marketplace for musical instruments. The purpose of the platform was to facilitate direct transactions between instrument owners and renters, creating a user-friendly interface for both parties. The objective was to provide a seamless and efficient solution where instrument owners can monetize their assets by renting them out, while music enthusiasts can easily discover and rent the instruments they require.
 
-The purposes of this project are:
+The methods used in the project were C# .NET for the backend logic, Blazor pages for the front-end interface, and an SQLite database for data management. The platform employs a user registration system to grant access to rental services. Individual instrument owners were empowered to post listings on the platform, initiating a direct rental process between the owner (lender) and the renter. The business model revolved around commission-based monetization, with the rental fee determined through mutual agreement between the involved parties. The methods employed ensured a straightforward and interactive experience for users, fostering a peer-to-peer rental marketplace.
 
-- Explain the project here 
-
-## About the project
-
-Blazor WebAssembly (Blazor WASM) app. A school project. The API uses Sqlite as database.
-
-The Blazor app handles joining the data so that proper data is shown. Uses async calls to the API and handles them properly in the client app.
-
-`src/BlazorPeople` is the BlazorWASM app. 
-`src/PeopleApi` is the web API.
-`src/PeopleLib` is a class library containing the data models used by both the Blazor app and the web API.
-
-### How to run the project
-
-To run both the Web API and the Blazor client app:
-
-1. If using Visual Studio, set both as startup projects
-2. If using dotnet you can use following commands when in src folder
-
-To run the API in localhost on desired port (the sample below uses 8001).
-
-```sh
-dotnet run --project PeopleApi/PeopleApi.csproj --urls "https://localhost:8001"
-```
-
-> Note! The Web API has a port setting in Properties/launchSettings.json file to run on **https://localhost:5000** by default.
-
-
-To run the Blazor app in localhost on desired port (the sample below uses 9001).
-
-```sh
-dotnet run --project BlazorPeople/BlazorPeople.csproj --urls "https://localhost:9001"
-```
-
-> Note! The BlazorPeople app has a port setting in Properties/launchSettings.json file to run on **https://localhost:3000** by default.
-
-
-## Tests
-
-Explain tests here
-
-
-## Helpful Links
-
-> **Following material will help to understand this project and learn more about Blazor WASM.**
-
-
-1. [ASP.NET Core Blazor](https://docs.microsoft.com/en-us/aspnet/core/blazor/?view=aspnetcore-6.0)
-2. [Build a Blazor todo list app](https://docs.microsoft.com/en-us/aspnet/core/blazor/tutorials/build-a-blazor-app?view=aspnetcore-6.0&pivots=webassembly)
-3. [Call a web API from ASP.NET Core Blazor](https://docs.microsoft.com/en-us/aspnet/core/blazor/call-web-api?view=aspnetcore-6.0&pivots=webassembly)
-4. [ASP.NET Core Blazor routing and navigation](https://docs.microsoft.com/en-us/aspnet/core/blazor/fundamentals/routing?view=aspnetcore-6.0)
-5. [ASP.NET Core Blazor forms and validation](https://docs.microsoft.com/en-us/aspnet/core/blazor/forms-validation?view=aspnetcore-6.0)
+As a result, the rental marketplace for musical instruments was successfully implemented as a web-based software solution that effectively connects instrument owners with music enthusiasts in a rental ecosystem. It fulfilled the objectives by providing a valuable and innovative service, allowing instrument owners to monetize their assets, and enabling music enthusiasts to easily access and rent the instruments they seek. The platform's user-friendly interface enhances accessibility for both owners and renters, streamlining the process of posting instrument listings and initiating transactions. The direct facilitation of rental transactions between users promotes a sense of autonomy and flexibility. The commission-based business model has proven to be a viable means of revenue generation for the platform. 
