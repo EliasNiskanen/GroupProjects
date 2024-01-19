@@ -1,0 +1,27 @@
+﻿.blog-post {
+    max-width: 800px;
+    margin: 0 auto 30px auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.blog-post-title {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+}
+
+.blog-post-meta {
+    font-size: 1.1rem;
+    color: #888;
+    margin-bottom: 20px;
+}
+
+.blog-post hr {
+    margin-top: 30px;
+    margin-bottom: 30px;
+    border: 0;
+    border-top: 1px solid #ccc;
+}

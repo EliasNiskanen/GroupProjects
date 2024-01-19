@@ -1,0 +1,215 @@
+﻿@page "/register"
+@inject HttpClient Http
+@inject NavigationManager NavigationManager
+@inject ILogger<Register> Logger
+@using System.Drawing;
+
+<div class="card">
+    <h4 class="card-header">Rekisteröidy</h4>
+    <div class="card-body">
+        <EditForm Model="@renter" OnValidSubmit="HandleValidSubmit">
+            <DataAnnotationsValidator />
+            <div class="form-group">
+                <label>Etunimi</label>
+                <InputText @bind-Value="renter.FirstName" class="form-control" />
+                <ValidationMessage For="@(() => renter.FirstName)" />
+            </div>
+            <div class="form-group">
+                <label>Sukunimi</label>
+                <InputText @bind-Value="renter.LastName" class="form-control" />
+                <ValidationMessage For="@(() => renter.LastName)" />
+            </div>
+            <div class="form-group">
+                <label>Käyttäjänimi</label>
+                <InputText @bind-Value="renter.NickName" class="form-control" />
+                <ValidationMessage For="@(() => renter.NickName)" />
+            </div>
+            <div class="form-group">
+                <label>Sähköposti</label>
+                <InputText @bind-Value="renter.Email" type="email" class="form-control" />
+                <ValidationMessage For="@(() => renter.Email)" />
+            </div>
+            <p hidden="@(!HideLabel)" style="color:red">Sähköpostiosoite on jo käytössä</p>
+            <div class="form-group">
+                <label>Salasana</label>
+                <InputText @bind-Value="renter.Password" type="password" class="form-control" />
+                <ValidationMessage For="@(() => renter.Password)" />
+            </div>
+            <div class="form-group">
+                <label>Varmista salasana</label>
+                <InputText @bind-Value="tmpRenter.Password" type="password" class="form-control" />
+            </div>
+            <p hidden="@(!HideLabelPsw)" style="color:red">Salasanat eivät täsmää</p>
+
+            <div class="form-group">
+                <label>Valitse itsellesi profiilikuva. (Voit vaihtaa tämän myöhemmin)</label>
+            </div>
+            <div class="image-container">
+                @foreach (var image in Images)
+                {
+                    <div class="@((image == SelectedImage) ? "selected-image" : "")">
+                        <img src="@image.Url" alt="@image.Title" @onclick="() => OnImageClickAsync(image)" />
+                    </div>
+                }
+            </div>
+
+            @if (SelectedImage != null)
+            {
+                <div>
+                    <p>Valittu profiilikuva: @SelectedImage.Title</p>
+                </div>
+            }
+            else
+            {
+                <div>
+                    <p>Oletuksena valittu profiilikuva on ensimmäinen vasemmalta</p>
+                </div>
+            }
+
+            <button disabled="@loading" class="btn btn-primary">
+                @if (loading)
+                {
+                    <span class="spinner-border spinner-border-sm mr-1"></span>
+                }
+                Rekisteröidy
+            </button>
+
+            <NavLink href="/login" class="btn btn-link">Kirjaudu</NavLink>
+        </EditForm>
+    </div>
+</div>
+
+@code {
+    private bool loading;
+
+    private Renter renter = new Renter();
+    private Renter tmpRenter = new Renter();
+    private Renter? emailStatus;
+    private ProfileDefaultPicture[]? profileDefaultPicture;
+    private bool HideLabel {get;set;} = false;
+    private bool HideLabelPsw {get;set;} = false;
+
+
+    private List<ImageModel> Images = new List<ImageModel>()
+    {
+        new ImageModel()
+        {
+
+            Title = "Hipsteri",
+            Url = "images/user_default_images/profilePic1.png"
+        },
+        new ImageModel()
+        {
+            Title = "Partamies",
+            Url = "images/user_default_images/profilePic2.png"
+        },
+        new ImageModel()
+        {
+            Title = "Iloinen nainen",
+            Url = "images/user_default_images/profilePic3.png"
+        },
+        new ImageModel()
+        {
+            Title = "Iloinen tyttö",
+            Url = "images/user_default_images/profilePic4.png"
+        },
+        new ImageModel()
+        {
+            Title = "Musiikki tyttö",
+            Url = "images/user_default_images/profilePic5.png"
+        },
+        new ImageModel()
+        {
+            Title = "Kalastajalakki poika",
+            Url = "images/user_default_images/profilePic6.png"
+        },
+        new ImageModel()
+        {
+            Title = "Kieltä näyttävä tyttö",
+            Url = "images/user_default_images/profilePic7.png"
+        },
+        new ImageModel()
+        {
+            Title = "Bisnes mies",
+            Url = "images/user_default_images/profilePic8.png"
+        },
+        new ImageModel()
+        {
+            Title = "Sportti poika",
+            Url = "images/user_default_images/profilePic9.png"
+        },
+        new ImageModel()
+        {
+            Title = "Kiharahiuksinen nainen",
+            Url = "images/user_default_images/profilePic10.png"
+        }
+    };
+
+    protected override void OnInitialized()
+    {
+        SelectedImage = Images.FirstOrDefault();
+    }
+
+    private ImageModel SelectedImage;
+
+    private async Task OnImageClickAsync(ImageModel image)
+    {
+        SelectedImage = image;
+
+        string url = image.Url;
+        string[] parts = url.Split(new[] { "/profilePic", "." }, StringSplitOptions.RemoveEmptyEntries);
+        int identifier = int.Parse(parts[1]);
+
+        var tempProfilePictures = await Http.GetFromJsonAsync<ProfileDefaultPicture[]>("profiledefaultpicture");
+        profileDefaultPicture = tempProfilePictures.Where(p => p.Id == identifier).ToArray();
+
+        renter.Picture = profileDefaultPicture[0].Picture;
+    }
+
+    private class ImageModel
+    {
+        public string Title { get; set; }
+        public string Url { get; set; }
+    }
+   
+
+    private async Task HandleValidSubmit()
+    {
+        Logger.LogInformation("HandleValidSubmit called");
+        loading = true;
+
+        //Tarkistetaan että salasanat täsmäävät
+        if(renter.Password != tmpRenter.Password)
+        {
+            HideLabelPsw = true;
+            loading = false;
+            Logger.LogError("Passwords doesnt match");
+        }
+        else
+        {
+            emailStatus = await Http.GetFromJsonAsync<Renter>($"renter/register/{renter.Email}");
+
+            //Tarkistetaan ettei luoda jo olemassa olevalla sähköpostilla toista tunnusta
+            if(emailStatus.Presentation == "Sähköposti jo olemassa")
+            {
+                HideLabel = true;
+                loading = false;
+                Logger.LogError($"Email allready exist");
+            }
+            else 
+            {
+                var result = await Http.PostAsJsonAsync($"renter", renter);
+                if (result.IsSuccessStatusCode)
+                {
+                    NavigationManager.NavigateTo($"/registrationsucces"); //Rekisteröinti onnistui sivulle?
+                }
+                else
+                {
+                    loading = false;
+                    Logger.LogError($"Failed to POST a new renter. Details: {result.ReasonPhrase}");
+                }
+            }
+        }
+
+    }
+}

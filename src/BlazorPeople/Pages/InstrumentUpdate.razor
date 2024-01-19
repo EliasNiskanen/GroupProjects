@@ -1,0 +1,288 @@
+﻿@page "/rentalinstruments/update/{IdRentalInstrument:int}";
+@inject HttpClient Http
+@inject NavigationManager NavigationManager
+@inject ILogger<UserSettings> Logger
+@inject IJSRuntime JsRuntime
+
+<style>
+
+    /*   .blog-post {
+            max-width: 800px;
+            margin: 0 auto 30px auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .blog-post-title {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .blog-post-meta {
+            font-size: 1.1rem;
+            color: #888;
+            margin-bottom: 20px;
+        }
+
+        .blog-post hr {
+            margin-top: 30px;
+            margin-bottom: 30px;
+            border: 0;
+            border-top: 1px solid #ccc;
+        }
+            */
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-check {
+        margin-left: 10px;
+        width: 20px;
+        height: 20px;
+    }
+
+    label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+    }
+
+    .input-error {
+        color: red;
+    }
+
+    .image-container {
+        display: flex;
+        flex-wrap: wrap;
+        margin-bottom: 20px;
+        max-width: 500px;
+        max-height: 500px;
+    }
+
+        .image-container img {
+            max-width: 500px;
+            max-height: 500px;
+            cursor: pointer;
+            border: 1px solid transparent;
+            transition: border-color 0.3s ease-in-out;
+        }
+
+            .image-container img:hover {
+                border-color: #007bff;
+                opacity: 0.4;
+            }
+
+    .selected-image {
+        border: 2px solid blue;
+    }
+
+    .form-control {
+        width: 50%;
+    }
+
+    .form-date {
+        width: 25%;
+    }
+
+    label {
+        cursor: pointer;
+        display: inline-block;
+    }
+</style>
+
+<h1>Päivitä soittimen tietoja</h1>
+
+@if (null == rentalInstrument)
+{
+    <p>Ladataan soitinta...</p>
+
+}
+else
+{
+
+    <div class="card" style="max-width: 740px;">
+
+        <h4 class="card-header">@rentalInstrument.Type</h4>
+        <div class="card-body">
+            <EditForm Model="@rentalInstrument" OnValidSubmit="@HandleValidSubmit">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+                <!--TODO: eri kuvamuodot mukaan jotenkin, nyt herjaa vaikka kuva vaihtuukin tietokantaan-->
+
+
+                <div class="form-group">
+                    <label for="picture">
+                        @if (rentalInstrument.Picture == null)
+                        {
+                            <div class="image-container">
+                                <img src="~src\BlazorPeople\wwwroot\images\trip_images\trip1_image1.png" />
+                            </div>
+
+                        }
+                        else
+                        {
+                            <div class="image-container">
+                                <img src="data:image/jpg;base64,@Convert.ToBase64String(rentalInstrument.Picture)" style="max-width: 70%; height: auto;" class="trip-picture" />
+                            </div>
+
+                        }
+                    </label>
+                    <InputFile class="form-control-file" id="picture" name="picture" OnChange="async (e) => await HandlePictureChange(e)" style="display: none;" />
+                </div>
+                <div class="form-group">
+                    <p></p>
+                    <label>Tyyppi</label>
+                    <InputText maxlength="34" class="form-control" @bind-Value="rentalInstrument.Type" />
+                    <ValidationMessage For="@(() => rentalInstrument.Type)" />
+                </div>
+
+                <div class="form-group">
+                    <p></p>
+                    <label>Malli</label>
+                    <InputText maxlength="34" class="form-control" @bind-Value="rentalInstrument.Model" />
+                    <ValidationMessage For="@(() => rentalInstrument.Model)" />
+                </div>
+
+                <div class="form-group">
+                    <p></p>
+                    <label>Hinta</label>
+                    <InputNumber maxlength="34" class="form-control" @bind-Value="rentalInstrument.Price" />
+                    <ValidationMessage For="@(() => rentalInstrument.Price)" />
+                </div>
+
+                <div class="form-group">
+                    <p></p>
+                    <label>Lisätiedot</label>
+                    <InputText maxlength="34" class="form-control" @bind-Value="rentalInstrument.InstrumentInfo" />
+                    <ValidationMessage For="@(() => rentalInstrument.InstrumentInfo)" />
+                </div>
+
+                <div class="form-group">
+                    <p></p>
+                    <label>Valmistusvuosi</label>
+                    <InputText maxlength="34" class="form-control" @bind-Value="rentalInstrument.ModelYear" />
+                    <ValidationMessage For="@(() => rentalInstrument.ModelYear)" />
+                </div>
+
+@*   <div class="form-group">
+            <label>Alkupäivämäärä</label>
+            <br>
+            <InputDate class="form-date" @bind-Value="rent.StartDate" />
+            <ValidationMessage For="@(() => trip.StartDate)" />
+            </div>
+            <div class="form-group">
+            <label>Loppupäivämäärä</label>
+            <br>
+            <InputDate class="form-date" @bind-Value="rent.EndDate" />
+            <ValidationMessage For="@(() => trip.EndDate)" />
+            </div>*@
+
+                <p></p>
+                @if (ShowSuccessMessage)
+                {
+                    <div class="alert alert-success">
+                        Tallennettu!
+                    </div>
+                }
+                @if (ShowErrorMessage)
+                {
+                    <div class="alert alert-danger">
+                        Tietojen muokkaus epäonnistui, yritä uudelleen.
+                    </div>
+                }
+                <p>
+                    <button class="btn btn-primary" type="submit" disabled="@isSubmitting">Tallenna</button>
+                    <button class="btn btn-danger" onclick="@(() => DeleteBtnClicked())">Poista soitin</button>
+                </p>
+
+
+            </EditForm>
+
+        </div>
+    </div>
+
+}
+
+
+@code {
+    bool isSubmitting;
+    private bool ShowSuccessMessage = false;
+    private bool ShowErrorMessage = false;
+    [Parameter]
+    public int IdRentalInstrument { get; set; }
+    [Parameter]
+    public int IdRenter { get; set; }
+    private RentalInstrument? rentalInstrument;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        // trip = await Http.GetFromJsonAsync<Trip>($"trip/update/{IdHiker}/{IdTrip}"); <- malli koodi vanhasta projektista
+        var tempInstruments = await Http.GetFromJsonAsync<RentalInstrument[]>("rentalInstrument");
+        rentalInstrument = tempInstruments.FirstOrDefault(s => s.IdRentalInstrument == IdRentalInstrument);
+    }
+
+
+    private async Task HandleValidSubmit()
+    {
+        isSubmitting = true;
+        rentalInstrument.IdRenter = LoginInfo.Id;
+
+        var result = await Http.PutAsJsonAsync($"RentalInstrument/{rentalInstrument.IdRentalInstrument}", rentalInstrument);
+
+        if (result.IsSuccessStatusCode)
+        {
+
+            ShowSuccessMessage = true;
+            ShowErrorMessage = false;
+            //trip = await result.Content.ReadFromJsonAsync<Trip>(); <- malli koodi vanhasta projektista
+            //StateHasChanged();
+            await InvokeAsync(StateHasChanged);
+          
+        }
+        else
+        {
+            ShowErrorMessage = true;
+            ShowSuccessMessage = false;
+        }
+        isSubmitting = false;
+    }
+
+
+    private async Task HandlePictureChange(InputFileChangeEventArgs e)
+    {
+        var buffer = new byte[e.File.Size];
+        await e.File.OpenReadStream().ReadAsync(buffer);
+        rentalInstrument.Picture = buffer;
+    }
+
+    private async Task DeleteBtnClicked()
+    {
+
+        bool confirm = await JsRuntime.InvokeAsync<bool>("confirm", "Oletko varma, että haluat poistaa tämän soittimen?");
+        if (confirm)
+        {
+            var responseTrip = await Http.DeleteAsync($"RentalInstrument/{IdRentalInstrument}");
+          
+            if (responseTrip.IsSuccessStatusCode)
+            {
+                await JsRuntime.InvokeVoidAsync("alert", "Soitin poistettu onnistuneesti!");
+
+                StateHasChanged();
+                //ohjaus omiin soittimiin
+                NavigationManager.NavigateTo("/rentalinstruments");
+            }
+            else
+            {
+                Console.WriteLine("There was an error deleting the instrument");
+            }
+
+        }
+        else
+        {
+            Console.WriteLine("Delete canceled");
+        }
+    }
+}

@@ -1,0 +1,155 @@
+﻿@page "/borrowed";
+@inject HttpClient Http
+@inject NavigationManager NavigationManager
+@inject ILogger<UserSettings> Logger
+
+
+<style>
+    .blog-post {
+        max-width: 800px;
+        margin: 0 auto 30px auto;
+        padding: 20px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        background-color: #fff;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .blog-post-title {
+        font-size: 2.5rem;
+        margin-bottom: 10px;
+    }
+
+    .blog-post-meta {
+        font-size: 1.1rem;
+        color: #888;
+        margin-bottom: 20px;
+    }
+
+    .blog-post hr {
+        margin-top: 30px;
+        margin-bottom: 30px;
+        border: 0;
+        border-top: 1px solid #ccc;
+    }
+</style> 
+
+<h1>Käyttäjällä lainassa olevat soittimet</h1>
+
+
+@if (null ==  rentals)
+{
+    <p>Ei lainattuja soittimia</p>
+
+}
+else
+{
+    @foreach (var item in rentalinstrumentsHaetut)
+    {
+
+
+      
+            @if (@item.IdRentalInstrument == @rental.IdRentalinstrument)
+            {
+
+
+                <div class="blog-post">
+                    @*
+            @if(@item.Private==true){
+                <h2 class="blog-post-title">@item.HeadLine - Yksityinen</h2>
+
+            }
+            else{
+                <h2 class="blog-post-title">@item.HeadLine - Julkinen</h2>
+            }*@
+                    @*   <p class="blog-post-meta">@item.StartDate.ToShortDateString() - @item.EndDate.ToShortDateString()</p>*@
+
+
+                    <h2 class="blog-post-title">Tyyppi: @item.Type</h2>
+                    <h2 class="blog-post-title">Malli: @item.Model</h2>
+                    <h2 class="blog-post-title">Hinta: @item.Price</h2>
+                    <h2 class="blog-post-title">Lisätiedot: @item.InstrumentInfo</h2>
+                    <h2 class="blog-post-title">Valmistusvuosi: @item.ModelYear</h2>
+
+
+                    @if (item.Picture != null)
+                    {
+                        <img src="data:image/png;base64,@Convert.ToBase64String(item.Picture)" style="max-width: 100%; height: auto;" />
+                    }
+                    <hr>
+
+
+
+            </div>
+
+           
+        }
+    }
+}
+
+
+@code {
+    [Parameter]
+    public int? Id { get; set; }
+    private RentalInstrument[]? rentalinstrumentsHaetut;
+    private RentalInstrument[]? rentalinstruments;
+    private RentalInstrument rentalinstrument;
+    private Rental[]? rentals;
+    private Rental rental;
+    bool isSubmitting;
+    private bool ShowSuccessMessage = false;
+    private bool ShowErrorMessage = false;
+
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (LoginInfo.Id != null)
+        {
+            Id = LoginInfo.Id;
+            rentals = await Http.GetFromJsonAsync<Rental[]>($"rental");
+            rental = await Http.GetFromJsonAsync<Rental>($"rental/customer/{Id}");
+            rentalinstrumentsHaetut = await Http.GetFromJsonAsync<RentalInstrument[]>($"rentalinstrument");
+        }
+
+       
+
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        isSubmitting = true;
+
+        Logger.LogInformation("HandleValidSubmit called");
+
+        // Process the valid form
+        var result = await Http.PostAsJsonAsync($"travelDestination",  rentalinstrument);
+        if (result.IsSuccessStatusCode)
+        {
+            NavigationManager.NavigateTo($"/traveldestinations");
+        }
+
+
+
+        else
+        {
+            Logger.LogError($"Failed to POST a new address. Details: {result.ReasonPhrase}");
+        }
+
+        isSubmitting = false;
+    }
+
+    private async Task HandlePictureChange(InputFileChangeEventArgs e)
+    {
+        var buffer = new byte[e.File.Size];
+        await e.File.OpenReadStream().ReadAsync(buffer);
+        rentalinstrument.Picture = buffer;
+    }
+
+    //private async Task DeleteBtnClicked()
+    //{
+    //    await JsRuntime.InvokeVoidAsync("alert", "Et voi poistaa instrumenttia johon linkittyy lainaus!");
+
+    //}
+
+   
+}

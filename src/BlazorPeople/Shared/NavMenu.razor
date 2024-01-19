@@ -1,0 +1,92 @@
+﻿@inject ILogger<NavMenu> Logger
+
+
+<div class="top-row ps-3 navbar navbar-light">
+    <div class="container-fluid">
+        <a style="font-weight: bold;"class="navbar-brand" href="">Soitinlainaus</a>
+@*        <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
+            <span style="font-weight: bold;" class="oi oi-menu" aria-hidden="true"></span>
+        </button>*@
+    </div>
+</div>
+
+@*Päivitetään sidebar sen mukaan onko kirjautunut käyttäjä vai ei*@
+@if (LoginInfo.LoggedIn)
+{
+    <div>
+        <nav class="flex-column">
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                    <span class="oi oi-home" aria-hidden="true"></span> Home
+                </NavLink>
+            </div>
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="allrentalinstruments">
+                    <span class="oi oi-spreadsheet" aria-hidden="true"></span>  Lainattavat soittimet
+                </NavLink>
+            </div>
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="usersettings">
+                    <span style="font-weight: bold;" class="oi oi-wrench" aria-hidden="true"></span> Omat tiedot
+                </NavLink>
+            </div>
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="members">
+                    <span class="oi oi-person" aria-hidden="true"></span> Jäsenet
+                </NavLink>
+            </div>
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="rented">
+                    <span class="oi oi-book" aria-hidden="true"></span> Lainatut soittimet
+                </NavLink>
+            </div>
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="borrowed">
+                    <span class="oi oi-task" aria-hidden="true"></span> Lainassa olevat soittimet
+                </NavLink>
+            </div>
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="Instruments/create">
+                    <span class="oi oi-plus" aria-hidden="true"></span> Lisää uusi soitin
+                </NavLink>
+            </div>
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="rentalrequests">
+                    <span class="oi oi-spreadsheet" aria-hidden="true"></span>  Lainauspyynnöt
+                </NavLink>
+            </div>
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="ownedinstruments">
+                    <span class="oi oi-musical-note" aria-hidden="true"></span> Omat soittimet
+                </NavLink>
+            </div>
+        </nav>
+    </div>
+}
+else
+{
+     <div>
+        <nav class="flex-column">
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                    <span class="oi oi-home" aria-hidden="true"></span> Home
+                </NavLink>
+            </div>
+             <div class="nav-item px-3">
+                <NavLink class="nav-link" href="allrentalinstruments">
+                    <span class="oi oi-plus" aria-hidden="true"></span> Lainattavat soittimet
+                </NavLink>
+            </div>
+        </nav>
+    </div>
+}
+
+@code {
+    private bool collapseNavMenu = true;
+
+    private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+
+
+
+
+}

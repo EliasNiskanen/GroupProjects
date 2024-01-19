@@ -1,0 +1,156 @@
+﻿@page "/usersettings"
+@inject HttpClient Http
+@inject NavigationManager NavigationManager
+@inject ILogger<UserSettings> Logger
+@using Microsoft.AspNetCore.Components.Forms
+@using System.IO;
+@using System.Text.RegularExpressions;
+@using System.Text.Json;
+
+<!--TODO: säädä tyylit-->
+
+
+
+@if(renter != null)
+{
+
+    <div class="card">
+        <h4 class="card-header">Käyttäjän @LoginInfo.NickName tiedot</h4>
+        <div class="card-body">
+            <EditForm Model="@renter" OnValidSubmit="@HandleValidSubmit">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+                <div class="form-group">
+                <label for="picture">
+                    @if (renter.Picture == null)
+                    {
+                        <div class="image-container">
+                            <img src="~src\BlazorPeople\wwwroot\images\user_default_images\profilePic1.png" />
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="image-container">
+                            <img src="data:image/jpg;base64,@Convert.ToBase64String(renter.Picture)" style="max-width: 100%; height: auto;" class="renter-picture" />
+                        </div>
+                    }
+                </label>
+                <InputFile class="form-control-file" id="picture" name="picture" OnChange="async (e) => await HandlePictureChange(e)" style="display: none;" />
+                 </div>
+             
+                <div class="form-group">
+                    <label>Etunimi</label>
+                    <InputText class="form-control" @bind-Value="renter.FirstName" />
+                    <ValidationMessage For="@(() => renter.FirstName)" />
+                </div>
+                <div class="form-group">
+                    <label>Sukunimi</label>
+                    <InputText class="form-control" @bind-Value="renter.LastName" />
+                    <ValidationMessage For="@(() => renter.LastName)" />
+                </div>
+                <div class="form-group">
+                    <label>Lempinimi</label>
+                    <InputText class="form-control" @bind-Value="renter.NickName" />
+                    <ValidationMessage For="@(() => renter.NickName)" />
+                </div>
+                <div class="form-group">
+                    <label>Paikkakunta</label>
+                    <InputText class="form-control" @bind-Value="renter.Locality" />
+                    <ValidationMessage For="@(() => renter.Locality)" />
+                </div>
+                <div class="form-group">
+                    <label>Esittäytyminen</label>
+                    <InputTextArea rows="3" class="form-control" @bind-Value="renter.Presentation" />
+                    <ValidationMessage For="@(() => renter.Presentation)" />
+                </div>
+
+                <!-- Sähköpostin ja salasanan vaihto ei olleet välttämättömiä, jos päätetään rakentaa, niin kannattanee tehdä oma sivunsa tälle
+                    <p>
+                      <label> Email: <input class="form-control" @onsubmit="ChangeDetails" placeholder="@LoginInfo.Email" /></label>
+                   </p>
+                   <p>
+                       <label> Salasana: <input class="form-control" @onsubmit="ChangeDetails" placeholder="@LoginInfo.Password" /></label>
+                     </p>-->
+                @if (ShowSuccessMessage)
+                {
+                    <div class="alert alert-success">
+                        Tallennettu!
+                    </div>
+                }
+                @if (ShowErrorMessage)
+                {
+                    <div class="alert alert-danger">
+                        Tietojen muokkaus epäonnistui, yritä uudelleen.
+                    </div>
+                }
+
+                <p>
+                    <button class="btn btn-primary" type="submit" disabled="@isSubmitting">Tallenna</button>
+                </p>
+
+               
+
+            </EditForm>
+
+        </div>
+    </div>
+}
+else
+{
+    <h1>Ladataan omia tietoja...</h1>    
+}
+
+
+@code{
+    bool isSubmitting;
+    [Parameter]
+    public int? Id { get; set; }
+    private bool ShowSuccessMessage = false;
+    private bool ShowErrorMessage = false;
+    private Renter renter = new Renter();
+    //public Renter? renter;
+    private readonly string[] imageExtensions = new string[] { ".jpg", ".jpeg", ".png", ".gif", ".bmp" };
+    [Inject]
+    private IJSRuntime JSRuntime { get; set; }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (LoginInfo.Id != null)
+        {
+            Id = LoginInfo.Id;
+            renter = await Http.GetFromJsonAsync<Renter>($"renter/{Id}");
+        }
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        isSubmitting = true;
+        renter.Email = LoginInfo.Email;
+        renter.Password = LoginInfo.Password;
+        var result = await Http.PutAsJsonAsync($"renter/{renter.IdRenter}", renter);
+        if (result.IsSuccessStatusCode)
+        {
+           ShowSuccessMessage = true;
+            ShowErrorMessage = false;
+            //renter = await result.Content.ReadFromJsonAsync<Renter>();
+            StateHasChanged(); 
+            //await InvokeAsync(StateHasChanged);
+            //NavigationManager.NavigateTo($"/");
+        }
+        else
+        {
+            ShowErrorMessage = true;
+            ShowSuccessMessage = false;
+        }
+        isSubmitting = false;
+    }
+
+
+    private async Task HandlePictureChange(InputFileChangeEventArgs e)
+    {
+        var buffer = new byte[e.File.Size];
+        await e.File.OpenReadStream().ReadAsync(buffer);
+        renter.Picture = buffer;
+    }
+
+}

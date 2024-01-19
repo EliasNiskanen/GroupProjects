@@ -1,0 +1,213 @@
+﻿* {
+    padding: 0;
+    margin: 0;
+    color: black;
+    position: sticky;
+    font-weight: bold;
+}
+/*a class on linkki buttoneiden värivaihto, ja samalla kyllä myös kaikkien muidenkin tekstien vaihto. Katselin hyvän vastavärin nyt, ilmotelkaa jos on ongelmallinen.*/
+a {
+    color: black !important;
+}
+h1 {
+    font-family: sans-serif;
+    text-shadow: 2px 2px 5px white;
+}
+h2 {
+    font-family: sans-serif;
+    text-shadow: 2px 2px 5px white;
+}
+.taustakuva {
+    width: 100%;
+    height:100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-attachment: fixed;
+    background-position: center;
+    background-size: cover;
+    background-image: url(taustakuvat/taustakuva1.jpg);
+    animation: change 50s infinite cubic-bezier(0.5, 8, 0.5, 0.5);
+
+}
+
+/*body, html {
+    margin: 0;
+    width: 100%;
+    height: 60px;
+    padding: 40px;
+    height: auto;
+    text-shadow: 2px 2px 5px white;
+    color: black;
+    font-family: sans-serif;
+}
+.taustakuva {
+    height: 100vh;
+    display: grid;
+    place-items: center;
+    position: relative;
+    background-image: linear-gradient(0deg, rgb(18 15 15 / 0,9),url(taustakuvat/taustakuva1.jpg.webp);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    animation: change 50s infinite cubic-bezier(0.5, 8, 0.5, 0.5);
+
+}
+
+.sisalto {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-transform: uppercase;
+}*/
+@keyframes change {
+    0% {
+        background-image: url(taustakuvat/taustakuva1.jpg)
+    }
+
+    20% {
+        background-image: url(taustakuvat/taustakuva2.jpg)
+    }
+
+    40% {
+        background-image: url(taustakuvat/taustakuva3.jpg)
+    }
+
+    60% {
+        background-image: url(taustakuvat/taustakuva4.jpg)
+    }
+
+    80% {
+        background-image: url(taustakuvat/taustakuva5.jpg)
+    }
+
+    100% {
+        background-image: url(taustakuvat/taustakuva1.jpg)
+    }
+}
+.section {
+    position: relative;
+    height: 100vh;
+}
+
+    .section .section-center {
+        position: absolute;
+        top: 50%;
+        left: 0;
+        right: 0;
+        -webkit-transform: translateY(-50%);
+        transform: translateY(-50%);
+    }
+
+#booking {
+    font-family: 'Source Sans Pro', sans-serif;
+    background-image: url('../img/background.jpg');
+    background-size: cover;
+    background-position: center;
+}
+
+.booking-form {
+    background: #fff;
+    -webkit-box-shadow: 0px 2px 5px -2px rgba(0, 0, 0, 0.3);
+    box-shadow: 0px 2px 5px -2px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(60, 64, 101, 0.1);
+}
+
+    .booking-form > form .row.no-margin {
+        margin-right: 0px;
+        margin-left: 0px;
+    }
+
+        .booking-form > form .row.no-margin > [class*="col-"] {
+            padding-right: 0px;
+            padding-left: 0px;
+        }
+
+    .booking-form .form-header {
+        padding: 15px 10px;
+        height: 110px;
+        line-height: 110px;
+        text-align: center;
+    }
+
+        .booking-form .form-header h2 {
+            font-family: 'Alegreya', serif;
+            margin: 0;
+            display: inline-block;
+            font-size: 52px;
+            color: #9a8067;
+        }
+
+    .booking-form .form-group {
+        position: relative;
+        height: 110px;
+        padding: 15px 10px;
+        margin-bottom: 0px;
+    }
+
+    .booking-form .form-control {
+        font-family: 'Alegreya', serif;
+        background-color: transparent;
+        border-radius: 0px;
+        border: none;
+        height: 50px;
+        -webkit-box-shadow: none;
+        box-shadow: none;
+        padding: 0;
+        font-size: 28px;
+        color: #3c404a;
+        font-weight: 700;
+    }
+
+    .booking-form select.form-control {
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+    }
+
+        .booking-form select.form-control + .select-arrow {
+            position: absolute;
+            right: 0px;
+            bottom: 20px;
+            width: 32px;
+            line-height: 32px;
+            height: 32px;
+            text-align: center;
+            pointer-events: none;
+            color: #818390;
+            font-size: 12px;
+        }
+
+            .booking-form select.form-control + .select-arrow:after {
+                content: '\279C';
+                display: block;
+                -webkit-transform: rotate(90deg);
+                transform: rotate(90deg);
+            }
+
+    .booking-form .form-label {
+        color: #818390;
+        display: block;
+        font-weight: 400;
+        height: 30px;
+        line-height: 30px;
+        font-size: 14px;
+    }
+
+    .booking-form .form-btn {
+        padding: 15px 10px;
+        height: 110px;
+    }
+
+    .booking-form .submit-btn {
+        background: #9a8067;
+        color: #fff;
+        border: none;
+        font-weight: 400;
+        text-transform: uppercase;
+        font-size: 14px;
+        display: block;
+        height: 80px;
+        width: 100%;
+    }

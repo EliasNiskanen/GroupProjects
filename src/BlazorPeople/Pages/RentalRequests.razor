@@ -1,0 +1,160 @@
+﻿@page "/rentalrequests"
+@inject HttpClient Http
+@inject NavigationManager NavigationManager
+@inject ILogger<UserSettings> Logger
+
+<style>
+	.blog-post {
+		max-width: 800px;
+		margin: 0 auto 30px auto;
+		padding: 20px;
+		border: 1px solid #ccc;
+		border-radius: 5px;
+		background-color: #fff;
+		box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+	}
+
+	.blog-post-title {
+		font-size: 2.5rem;
+		margin-bottom: 10px;
+	}
+
+	.blog-post-meta {
+		font-size: 1.1rem;
+		color: #888;
+		margin-bottom: 20px;
+	}
+
+	.blog-post hr {
+		margin-top: 30px;
+		margin-bottom: 30px;
+		border: 0;
+		border-top: 1px solid #ccc;
+	}
+</style>
+
+
+
+
+<PageTitle>Hyväksy´vuokrauspyyntö</PageTitle>
+
+<h1>Hyväksy vuokrauspyynnöt</h1>
+
+@if (null == rentalinstrumentsHaetut)
+{
+    <p>@LoginInfo.Id</p>
+
+}
+@if (null == rentalinstrumentsHaetut)
+{
+    <p>Ei vuokraus pyyntöjä.</p>
+
+}
+else
+{
+    @foreach (var item in rentalinstrumentsHaetut)
+    {
+        @if (@item.Lainauspyynto == true)
+        {
+            <div class="blog-post">
+                @*
+    @if(@item.Private==true){
+    <h2 class="blog-post-title">@item.HeadLine - Yksityinen</h2>
+
+    }
+    else{
+    <h2 class="blog-post-title">@item.HeadLine - Julkinen</h2>
+    }*@
+                @*   <p class="blog-post-meta">@item.StartDate.ToShortDateString() - @item.EndDate.ToShortDateString()</p>*@
+
+
+                <h2 class="blog-post-title">Tyyppi: @item.Type</h2>
+                <h2 class="blog-post-title">Malli: @item.Model</h2>
+                <h2 class="blog-post-title">Hinta: @item.Price</h2>
+                <h2 class="blog-post-title">Lisätiedot: @item.InstrumentInfo</h2>
+                <h2 class="blog-post-title">Valmistusvuosi: @item.ModelYear</h2>
+
+
+                @if (item.Picture != null)
+                {
+                    <img src="data:image/png;base64,@Convert.ToBase64String(item.Picture)" style="max-width: 100%; height: auto;" />
+                }
+                <hr>
+
+
+
+                @*<EditForm Model="@item" OnValidSubmit="@HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="col-md-4">
+    <div class="form-group">
+    <span class="form-label">Alkupvm</span>
+    <input class="form-control" type="date">
+    </div>
+    </div>
+    <div class="col-md-4">
+    <div class="form-group">
+    <span class="form-label">Loppupvm</span>
+    <input class="form-control" type="date">
+    </div>
+    </div>
+    <button class="btn btn-primary" type="submit" disabled="@isSubmitting">Tallenna</button>
+    <br>
+    @if (ShowErrorMessage)
+    {
+    <div class="alert alert-danger">
+    Soittimen varaus epäonnistui, yritä uudelleen.
+    </div>
+    }
+    </EditForm>*@
+                @if (LoginInfo.LoggedIn)
+                {
+                    <a class="btn btn-warning" href="@($"/acceptrequest/{item.IdRentalInstrument}")">Siirry hyväksymään lainauspyyntö</a>
+                    <br />
+                }
+
+                <br>
+
+
+                @*            @if (LoginInfo.LoggedIn)
+    {
+    <NavLink href="@($"rentalinstrumentEdit/{item.IdRentalInstrument}")">
+    <p><p><button class="btn btn-warning"> Muokkaa</button></p></p>
+    </NavLink>
+    <button class="btn btn-danger" @onclick="DeleteBtnClicked">Poista soitin</button>
+    }*@
+            </div>
+        }
+
+    }
+}
+
+
+
+@code {
+	[Parameter]
+	public int instrumentid { get; set; }
+	public int Id;
+	private RentalInstrument? rentalInstrument = new RentalInstrument();
+	bool isSubmitting;
+	private RentalInstrument[]? rentalinstrumentsHaetut;
+	public DateTime dateStart = DateTime.Now;
+	public DateTime dateEnd = DateTime.Now.AddDays(7);
+	bool disabled = true;
+
+
+	protected override async Task OnInitializedAsync()
+	{
+		Id = LoginInfo.Id;
+		rentalinstrumentsHaetut = await Http.GetFromJsonAsync<RentalInstrument[]>($"rentalInstrument/{Id}");
+		
+	}
+
+	private async Task HandlePictureChange(InputFileChangeEventArgs e)
+	{
+		var buffer = new byte[e.File.Size];
+		await e.File.OpenReadStream().ReadAsync(buffer);
+		rentalInstrument.Picture = buffer;
+	}
+}

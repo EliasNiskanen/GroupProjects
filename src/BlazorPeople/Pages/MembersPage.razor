@@ -1,0 +1,73 @@
+﻿@page "/members"
+@inject HttpClient Http
+@inject NavigationManager NavigationManager
+
+<style>
+    table {
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+    th, td {
+        text-align: left;
+        padding: 8px;
+    }
+
+    tr:nth-child(even) {
+        background-color: #f2f2f2;
+    }
+</style>
+
+<PageTitle>Members</PageTitle>
+
+<div class="blog-post">
+    <h1>Jäsenet</h1>
+
+  @*  Tämä on jäsenet sivu.*@
+
+    @if (null == renter)
+    {
+        <p>Ladataan jäseniä...</p>
+    }
+    else
+    {
+
+        <table>
+            <thead>
+                <tr>
+                    <td><b>Profiilikuva</b></td>
+                    <td><b>Etunimi</b></td>
+                    <td><b>Sukunimi</b></td>
+                    <td><b>Käyttäjänimi</b></td>
+                    <td><b>Paikkakunta</b></td>
+                    <td><b>Tietoa</b></td>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in renter)
+                {
+                    <tr>
+                        @if (item.Picture != null)
+                        {
+                            <td> <img src="data:image/jpg;base64,@Convert.ToBase64String(@item.Picture)" style="max-width: 100%; height: auto;" class="hiker-picture" /> </td>
+                        }
+                        <td>@item.FirstName</td>
+                        <td>@item.LastName</td>
+                        <td>@item.NickName</td>
+                        <td>@item.Locality</td>
+                        <td>@item.Presentation</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>
+
+@code {
+    private Renter[]? renter;
+
+    protected override async Task OnInitializedAsync()
+    {
+        renter = await Http.GetFromJsonAsync<Renter[]>("renter");
+    }
+}

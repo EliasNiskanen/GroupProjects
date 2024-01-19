@@ -1,0 +1,48 @@
+﻿@page "/logout"
+@inject HttpClient Http
+@inject NavigationManager NavigationManager
+@inject ILogger<LogOut> Logger
+
+<div class="card">
+        <h4 class="card-header">Kirjaudu ulos käyttäjältä: @LoginInfo.NickName</h4>
+        <div class="card-body">
+            <EditForm Model="@renter" OnSubmit="HandleSubmit">
+                <h2>Haluatko varmasti kirjautua ulos</h2>
+                <button disabled="@loading" class="btn btn-danger">
+                    @if (loading) 
+                    {
+                        <span class="spinner-border spinner-border-sm mr-1"></span>
+                    }
+                    Kirjaudu ulos
+                </button>
+                <NavLink href="" class="btn btn-link">Palaa etusivulle</NavLink>
+            </EditForm>
+        </div>
+</div>
+
+
+@code {
+    private bool loading;
+    private bool HideLabel {get;set;} = false;
+    private Renter renter = new Renter();
+    private Renter? loginHiker;
+
+    private void HandleSubmit() 
+    {
+        Logger.LogInformation("HandleSubmit called");
+        loading = true;
+
+        LoginInfo.LoggedIn = default;
+        LoginInfo.Id = default;
+        LoginInfo.FirstName = default;
+        LoginInfo.LstName = default;
+        LoginInfo.NickName = default;
+        LoginInfo.Locality = default;
+        LoginInfo.Presentation = default;
+        LoginInfo.Picture = default;
+        LoginInfo.Email = default;
+        LoginInfo.Password = default;
+        NavigationManager.NavigateTo($"/"); //Varmaan ohjaus etusivulle on hyvä tässä?
+    }
+}
+

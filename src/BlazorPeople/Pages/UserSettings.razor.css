@@ -1,0 +1,47 @@
+﻿
+.form-group {
+    margin-bottom: 20px;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.input-error {
+    color: red;
+}
+
+.image-container {
+    display: flex;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+    max-height:600px;
+    max-width:600px;
+}
+
+    .image-container img {
+        max-width: 600px;
+        max-height: 600px;
+        cursor: pointer;
+        border: 1px solid transparent;
+        transition: border-color 0.3s ease-in-out;
+    }
+
+        .image-container img:hover {
+            border-color: #007bff;
+            opacity: 0.4;
+        }
+
+.selected-image {
+    border: 2px solid blue;
+}
+
+label {
+    cursor: pointer;
+    display: inline-block;
+}
+
+
+

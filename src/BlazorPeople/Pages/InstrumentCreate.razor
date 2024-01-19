@@ -1,0 +1,136 @@
+﻿@page "/Instruments/create"
+@inject HttpClient Http
+@inject NavigationManager NavigationManager
+@using Microsoft.AspNetCore.Components.Forms
+@using System.IO;
+@using System.Text.RegularExpressions;
+@using System.Text.Json;
+
+<PageTitle>Add new RentalInstrument</PageTitle>
+
+<div class="card">
+    <h4 class="card-header">Lisää uusi soitin</h4>
+    <div class="card-body">
+        @if (ShowSuccessMessage)
+        {
+            <div class="alert alert-success">
+                Uusi soitin lisätty onnistuneesti!
+                <hr>
+                <a href="/tripspublic">Soittimet</a>
+            </div>
+        }
+
+        <EditForm Model="@NewRentalinstrument" OnValidSubmit="HandleSubmit">
+            <DataAnnotationsValidator />
+
+            <div class="form-group">
+                <label>Soittimen tyyppi</label>
+                <InputText @bind-Value="NewRentalinstrument.Type" class="form-control" />
+                <ValidationMessage For="@(() => NewRentalinstrument.Type)" />
+            </div>
+
+            <div class="form-group">
+                <label>Soittimen nimi</label>
+                <InputText @bind-Value="NewRentalinstrument.Model" class="form-control" />
+                <ValidationMessage For="@(() => NewRentalinstrument.Model)" />
+            </div>
+
+            <div class="form-group">
+                <label>Soittimen hinta</label>
+                <InputNumber @bind-Value="NewRentalinstrument.Price" class="form-control" />
+                <ValidationMessage For="@(() => NewRentalinstrument.Price)" />
+            </div>
+
+            <div class="form-group">
+                <label>Lisätiedot</label>
+                <InputText @bind-Value="NewRentalinstrument.InstrumentInfo" class="form-control" />
+                <ValidationMessage For="@(() => NewRentalinstrument.InstrumentInfo)" />
+            </div>
+
+            <div class="form-group">
+                <label>Valmistusvuosi</label>
+                <InputText @bind-Value="NewRentalinstrument.ModelYear" class="form-control" />
+                <ValidationMessage For="@(() => NewRentalinstrument.ModelYear)" />
+            </div>
+
+
+
+    @*        <div class="form-group">
+                <label for="startDate">Lainauksen aloituspäivä</label>
+                <input type="date" class="form-control" id="startDate" name="startDate" required @bind-value="@NewRentalinstrument.StartDate" />
+            </div>IdHiker
+            <div class="form-group">
+                <label for="endDate">Lainauksen loppumispäivä</label>
+                <input type="date" class="form-control" id="endDate" name="endDate" required @bind-value="@NewRentalinstrument.EndDate" />
+            </div>*@
+
+            <div class="form-group">
+                <label for="picture">Valitse soittimelle kuva</label>
+                <InputFile class="form-control-file" id="picture" name="picture" OnChange="async (e) => await HandlePictureChange(e)" />
+            </div>
+
+@*            <div class="form-group form-check custom-form-check">
+                <label class="form-check-label checkbox-label" for="private">Tallenna soitin yksityisenä (Muut eivät voi nähdä soitintasi)</label>
+                <div class="checkbox-wrapper">
+                    <input type="checkbox" class="form-check-input checkbox-input" id="private" name="private" @bind="@NewRentalinstrument.Private" />
+                </div>
+            </div>*@
+
+            <button class="btn btn-primary">Tallenna uusi soitin</button>
+
+            @if (ShowErrorMessage)
+            {
+                <div class="alert alert-danger">
+                    Soittimen lisäys epäonnistui, yritä uudelleen.
+                </div>
+            }
+        </EditForm>
+    </div>
+</div>
+
+@code {
+    private RentalInstrument NewRentalinstrument = new RentalInstrument();
+    private bool ShowSuccessMessage = false;
+    private bool ShowErrorMessage = false;
+    private readonly string[] imageExtensions = new string[] { ".jpg", ".jpeg", ".png", ".gif", ".bmp" };
+
+    // protected override void OnInitialized()
+    //{
+    //    NewRentalinstrument.StartDate = DateTime.Today;
+    //    NewRentalinstrument.EndDate = DateTime.Today;
+    //}
+
+    [Inject]
+    private IJSRuntime JSRuntime { get; set; }
+
+
+    //TODO Lisää tarkistuksia esim: Onko lainaus alkanut ennen kuin loppunut, annetiinko kuva? jne...
+    private async Task HandleSubmit()
+    {
+        NewRentalinstrument.IdRenter = LoginInfo.Id;
+        var response = await Http.PostAsJsonAsync<RentalInstrument>("rentalinstrument", NewRentalinstrument);
+
+        if (response.IsSuccessStatusCode)
+        {
+            ShowSuccessMessage = true;
+            ShowErrorMessage = false;
+            NewRentalinstrument = new RentalInstrument();
+
+            //NewRentalinstrument.StartDate = DateTime.Today;
+            //NewRentalinstrument.EndDate = DateTime.Today;
+        }
+        else
+        {
+            ShowErrorMessage = true;
+            ShowSuccessMessage = false;
+        }
+    }
+
+
+    private async Task HandlePictureChange(InputFileChangeEventArgs e)
+    {
+        var buffer = new byte[e.File.Size];
+        await e.File.OpenReadStream().ReadAsync(buffer);
+        NewRentalinstrument.Picture = buffer;
+    }
+}

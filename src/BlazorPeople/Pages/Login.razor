@@ -1,0 +1,69 @@
+﻿@page "/login"
+@inject HttpClient Http
+@inject NavigationManager NavigationManager
+@inject ILogger<Login> Logger
+
+<div class="card">
+    <h4 class="card-header">Kirjaudu</h4>
+    <div class="card-body">
+        <EditForm Model="@renter" OnSubmit="HandleSubmit">
+            <DataAnnotationsValidator />
+            <div class="form-group">
+                <label>Sähköpostiosoite</label>
+                <InputText @bind-Value="renter.Email" class="form-control" required/>
+                <ValidationMessage For="@(() => renter.Email)" />
+            </div>
+            <div class="form-group">
+                <label>Salasana</label>
+                <InputText @bind-Value="renter.Password" type="password" class="form-control" required/>
+                <ValidationMessage For="@(() => renter.Password)" />
+            </div>
+            <p hidden="@(!HideLabel)" style="color:red">Sähköpostiosoite tai salasana on väärä</p>
+            <button disabled="@loading" class="btn btn-primary">
+                @if (loading) 
+                {
+                    <span class="spinner-border spinner-border-sm mr-1"></span>
+                }
+                Kirjaudu
+            </button>
+            <NavLink href="/register" class="btn btn-link">Rekisteröidy</NavLink>
+        </EditForm>
+    </div>
+</div>
+
+
+@code {
+    private bool loading;
+    private bool HideLabel {get;set;} = false;
+    private Renter renter = new Renter();
+    private Renter? loginHiker;
+
+    private async Task HandleSubmit()
+    {
+        Logger.LogInformation("HandleValidSubmit called");
+        loading = true;
+
+        loginHiker = await Http.GetFromJsonAsync<Renter>($"renter/login/{renter.Email}/{renter.Password}");
+
+        if(loginHiker.IdRenter == 0)         {
+            HideLabel = true;
+            loading = false;
+            Logger.LogError($"Password and Email do not match");
+        }
+        else
+        {
+            LoginInfo.LoggedIn = true;
+            LoginInfo.Id = loginHiker.IdRenter;
+            LoginInfo.FirstName = loginHiker.FirstName;
+            LoginInfo.LstName = loginHiker.LastName;
+            LoginInfo.NickName = loginHiker.NickName;
+            LoginInfo.Locality = loginHiker.Locality;
+            LoginInfo.Presentation = loginHiker.Presentation;
+            LoginInfo.Picture = loginHiker.Picture;
+            LoginInfo.Email = loginHiker.Email;
+            LoginInfo.Password = loginHiker.Password;
+            await InvokeAsync(StateHasChanged);
+            NavigationManager.NavigateTo($"/welcomeuserx"); 
+        }
+    }
+}

@@ -1,0 +1,28 @@
+﻿@page "/"
+@inject HttpClient Http
+@inject NavigationManager NavigationManager
+@inject ILogger<Index> Logger
+
+
+<PageTitle>Home</PageTitle>
+<body>
+        <h1 style="font-weight: bold; opacity: 1 !important;">Tervetuloa Soitinlainauksen kotisivuille.</h1>
+        <br />
+        <br />
+</body>
+
+
+
+
+@if (!LoginInfo.LoggedIn)
+{
+    <a style="font-size: 24px; text-decoration: underline;" href="/login">Kirjaudu </a>
+    <a style="font-size: 24px;">tai </a>
+    <a style="font-size: 24px; text-decoration: underline;" href="/register">rekisteröidy </a>
+    <a style="font-size: 24px;">nähdäksesi lisää</a>
+    <br />
+    <a style="font-size: 24px; color:hotpink !important; font-family:'Comic Sans MS'; text-decoration: underline;" href="/allrentalinstruments">Tutustu vuokrattaviin soittimiin</a>
+}
+
+
+
